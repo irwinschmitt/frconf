@@ -42,7 +42,7 @@ export default function Home() {
       console.log(response);
 
       if (response.ok) {
-        router.push(`/${roomId}?mode=${mode}`);
+        router.push(`/${roomId}`);
       } else {
         alert("Room not found");
       }
@@ -70,7 +70,7 @@ export default function Home() {
 
       if (response.ok) {
         const { id } = await response.json();
-        router.push(`/${id}?mode=${mode}`);
+        router.push(`/${id}`);
       } else {
         alert("Failed to create room");
       }
