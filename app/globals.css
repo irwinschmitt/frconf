@@ -9,8 +9,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1e1e1e;
+    --foreground: #cfcfcf;
+    --input-background: #2e2e2e;
+    --input-foreground: #e0e0e0;
+  }
+
+  select,
+  input {
+    color: var(--input-foreground);
+    background-color: var(--input-background);
+    border: 1px solid var(--foreground);
   }
 }
 
