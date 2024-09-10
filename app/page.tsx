@@ -7,6 +7,7 @@ export default function Home() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [mode, setMode] = useState("webrtc");
   const [isNameError, setIsNameError] = useState(false);
   const [isRoomIdError, setIsRoomIdError] = useState(false);
 
@@ -20,24 +21,62 @@ export default function Home() {
     setIsNameError(false);
   };
 
-  const handleJoinRoom = () => {
-    if (!name) {
-      setIsNameError(true);
-    }
-    if (!roomId) {
-      setIsRoomIdError(true);
-    }
-    if (name && roomId) {
-      router.push(`/${roomId}`);
-    }
+  const handleModeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setMode(e.target.value);
   };
 
-  const handleCreateRoom = () => {
+  const handleJoinRoom = async () => {
     if (!name) {
       setIsNameError(true);
       return;
     }
-    console.log("Creating room...");
+
+    if (!roomId) {
+      setIsRoomIdError(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/room/${roomId}`);
+
+      console.log(response);
+
+      if (response.ok) {
+        router.push(`/${roomId}?mode=${mode}`);
+      } else {
+        alert("Room not found");
+      }
+    } catch (error) {
+      console.error("Failed to join room:", error);
+    }
+  };
+
+  const handleCreateRoom = async () => {
+    if (!name) {
+      setIsNameError(true);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/room", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mode }),
+      });
+
+      console.log(response);
+
+      if (response.ok) {
+        const { id } = await response.json();
+        router.push(`/${id}?mode=${mode}`);
+      } else {
+        alert("Failed to create room");
+      }
+    } catch (error) {
+      console.error("Failed to create room:", error);
+    }
   };
 
   return (
@@ -52,7 +91,10 @@ export default function Home() {
         onChange={handleNameChange}
       />
 
-      <select className="w-80 p-2 border border-gray-300 rounded-md">
+      <select
+        className="w-80 p-2 border border-gray-300 rounded-md"
+        onChange={handleModeChange}
+      >
         <option value="webrtc">WebRTC</option>
         <option value="websocket">WebSocket</option>
       </select>
